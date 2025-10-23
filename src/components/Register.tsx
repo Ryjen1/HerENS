@@ -51,7 +51,7 @@ export default function Register({ onRegistrationSuccess }: RegisterProps) {
 
        // Show user-friendly error message
        if (error.message?.includes('insufficient funds')) {
-         alert('❌ Transaction failed: Insufficient funds for gas. Please get some Sepolia ETH from a faucet.')
+         alert('❌ Transaction failed: Insufficient funds for gas. Please get some Base Sepolia ETH from a faucet.')
        } else if (error.message?.includes('User rejected')) {
          alert('❌ Transaction cancelled: You rejected the transaction in your wallet.')
        } else if (error.message?.includes('already registered')) {
@@ -165,17 +165,17 @@ export default function Register({ onRegistrationSuccess }: RegisterProps) {
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-800 mb-2">Need Sepolia ETH?</h4>
+              <h4 className="font-semibold text-blue-800 mb-2">Need Base Sepolia ETH?</h4>
               <p className="text-sm text-blue-700 mb-2">
-                This app runs on Sepolia testnet. If your transaction fails due to insufficient funds:
+                This app runs on Base Sepolia testnet. If your transaction fails due to insufficient funds:
               </p>
               <a
-                href="https://sepoliafaucet.com/"
+                href="https://sepolia.base.org/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 underline text-sm"
               >
-                Get free Sepolia ETH from faucet →
+                Get free Base Sepolia ETH from faucet →
               </a>
             </div>
 

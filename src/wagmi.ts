@@ -1,11 +1,11 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
-import { sepolia,baseSepolia } from 'wagmi/chains'
+import {baseSepolia } from 'wagmi/chains'
 
 export const config = getDefaultConfig({
    appName: 'HerENS',
    projectId: '54ce9aeda9332fba67ac4617e6d7ac1e',
    chains: [baseSepolia],
-   ssr: false,
+   ssr: true,
  })
 
 // Add connection timeout and retry configuration

@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { config } from './wagmi'
-import { sepolia } from 'wagmi/chains'
+import { baseSepolia } from 'wagmi/chains'
 import Register from './components/Register'
 import GroupChat from './components/GroupChat'
 import PrivateChat from './components/PrivateChat'
@@ -45,7 +45,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           modalSize="compact"
-          initialChain={sepolia}
+          initialChain={baseSepolia}
           showRecentTransactions={true}
         >
           <div className="min-h-screen bg-gray-100">
