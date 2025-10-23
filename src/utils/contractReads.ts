@@ -1,5 +1,5 @@
 import { createPublicClient, http } from 'viem'
-import { sepolia } from 'viem/chains'
+import { baseSepolia } from 'viem/chains'
 import { parseAbi } from 'viem'
 import { CONTRACT_ADDRESSES } from '../config/contracts'
 
@@ -9,8 +9,8 @@ const registryAbi = parseAbi([
 
 // Create a public client for reading contract data
 const publicClient = createPublicClient({
-  chain: sepolia,
-  transport: http()
+  chain: baseSepolia,
+  transport: http('https://base-sepolia.g.alchemy.com/v2/Ef7_aX-IDtQ-omvBIoGSs1Nzm_1N4C1x')
 })
 
 export async function getUserDetailsFromContract(userAddress: string) {

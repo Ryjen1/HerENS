@@ -37,13 +37,9 @@ export default function MembersList({ onSelectUser, showChatButton = true }: Mem
         // Create members list
         for (const userAddress of allUsers) {
           if (userAddress.toLowerCase() !== currentUserAddress?.toLowerCase()) {
-            // Try to get cached username first
-            const cachedName = localStorage.getItem(`username_${userAddress}`)
-            const displayName = cachedName || `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
-
             membersList.push({
               address: userAddress,
-              ensName: displayName
+              ensName: `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
             })
           }
         }
@@ -53,39 +49,33 @@ export default function MembersList({ onSelectUser, showChatButton = true }: Mem
         // Fetch actual usernames from the contract
         allUsers.forEach((userAddress) => {
           if (userAddress.toLowerCase() !== currentUserAddress?.toLowerCase()) {
-            const cachedName = localStorage.getItem(`username_${userAddress}`)
-            if (!cachedName) {
-              // Use the contract reading utility to fetch actual username
-              try {
-                const fetchUsername = async () => {
-                  try {
-                    const userDetails = await getUserDetailsFromContract(userAddress)
+            // Use the contract reading utility to fetch actual username
+            try {
+              const fetchUsername = async () => {
+                try {
+                  const userDetails = await getUserDetailsFromContract(userAddress)
 
-                    if (userDetails) {
-                      const actualUsername = userDetails.registered && userDetails.ensName
-                        ? userDetails.ensName
-                        : `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
+                  if (userDetails) {
+                    const actualUsername = userDetails.registered && userDetails.ensName
+                      ? userDetails.ensName
+                      : `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
 
-                      // Cache the actual username
-                      localStorage.setItem(`username_${userAddress}`, actualUsername)
-
-                      // Update the member in the list
-                      setMembers(prev => prev.map(member =>
-                        member.address === userAddress
-                          ? { ...member, ensName: actualUsername }
-                          : member
-                      ))
-                    }
-                  } catch (error) {
-                    console.error('Error fetching username from contract:', error)
+                    // Update the member in the list
+                    setMembers(prev => prev.map(member =>
+                      member.address === userAddress
+                        ? { ...member, ensName: actualUsername }
+                        : member
+                    ))
                   }
+                } catch (error) {
+                  console.error('Error fetching username from contract:', error)
                 }
-
-                // Fetch with a small delay to avoid overwhelming the network
-                setTimeout(fetchUsername, Math.random() * 1000)
-              } catch (error) {
-                console.error('Error setting up username fetch:', error)
               }
+
+              // Fetch with a small delay to avoid overwhelming the network
+              setTimeout(fetchUsername, Math.random() * 1000)
+            } catch (error) {
+              console.error('Error setting up username fetch:', error)
             }
           }
         })

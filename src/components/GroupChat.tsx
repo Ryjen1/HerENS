@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useWriteContract, useReadContract, useWatchContractEvent } from 'wagmi'
+import { useWriteContract, useReadContract, useWatchContractEvent, useClient } from 'wagmi'
 import { parseAbi } from 'viem'
 import MembersList from './MembersList'
 import { CONTRACT_ADDRESSES } from '../config/contracts'
@@ -11,6 +11,11 @@ const chatAbi = parseAbi([
   'function getGroupMessages(uint256 _groupId, uint256 _start, uint256 _count) external view returns ((address sender, string content, uint256 timestamp)[])',
   'function getGroupMembers(uint256 _groupId) external view returns (address[])',
   'function groupCount() external view returns (uint256)',
+])
+
+const registryAbi = parseAbi([
+  'function getAllUsers() external view returns (address[] memory)',
+  'function getUserDetails(address userAddress) external view returns (string memory ensName, string memory avatarHash, bool registered)',
 ])
 
 interface Message {
@@ -25,8 +30,16 @@ export default function GroupChat() {
    const [newMessage, setNewMessage] = useState('')
    const [newGroupName, setNewGroupName] = useState('')
    const [newMember, setNewMember] = useState('')
+   const [userNames, setUserNames] = useState<Record<string, string>>({})
 
    const { writeContract } = useWriteContract()
+   const client = useClient()
+
+   const { data: allUsers } = useReadContract({
+     address: CONTRACT_ADDRESSES.registry,
+     abi: registryAbi,
+     functionName: 'getAllUsers',
+   })
 
    const { data: groupMessages } = useReadContract({
      address: CONTRACT_ADDRESSES.chat,
@@ -36,10 +49,29 @@ export default function GroupChat() {
    })
 
    useEffect(() => {
-     if (groupMessages) {
-       setMessages(groupMessages as Message[])
+      if (groupMessages) {
+        setMessages(groupMessages as Message[])
+      }
+    }, [groupMessages])
+
+   useEffect(() => {
+     if (allUsers && allUsers.length > 0 && client) {
+       Promise.all(allUsers.map(address => client.readContract({
+         address: CONTRACT_ADDRESSES.registry,
+         abi: registryAbi,
+         functionName: 'getUserDetails',
+         args: [address],
+       }))).then(details => {
+         const names: Record<string, string> = {}
+         allUsers.forEach((address, index) => {
+           names[address] = details[index][0] || address.slice(0, 6) + '...' + address.slice(-4)
+         })
+         setUserNames(names)
+       }).catch(error => {
+         console.error('Error fetching user details:', error)
+       })
      }
-   }, [groupMessages])
+   }, [allUsers, client])
 
    useWatchContractEvent({
      address: CONTRACT_ADDRESSES.chat,
@@ -156,7 +188,7 @@ export default function GroupChat() {
                     ) : (
                       messages.map((msg, index) => (
                         <div key={index} className="mb-2">
-                          <span className="font-semibold">{msg.sender.slice(0, 6)}...{msg.sender.slice(-4)}:</span> {msg.content}
+                          <span className="font-semibold">{userNames[msg.sender] || msg.sender.slice(0, 6) + '...' + msg.sender.slice(-4)}:</span> {msg.content}
                         </div>
                       ))
                     )}
