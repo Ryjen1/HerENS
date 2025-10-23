@@ -5,7 +5,7 @@ export const CONTRACT_ADDRESSES = {
   // multicall: '0x608c24ffb845A37f9068fD06cD5F5bf5a1F7e97D', // Not deployed
 } as const
 
-// ENS Registry address for Sepolia
+// ENS Registry address for Base Sepolia
 export const ENS_ADDRESSES = {
-  sepolia: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+  baseSepolia: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
 } as const
