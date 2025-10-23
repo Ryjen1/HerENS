@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useWriteContract, useReadContract, useWatchContractEvent, useClient } from 'wagmi'
+import { useWriteContract, useReadContract, useWatchContractEvent, usePublicClient } from 'wagmi'
 import { parseAbi } from 'viem'
 import MembersList from './MembersList'
 import { CONTRACT_ADDRESSES } from '../config/contracts'
@@ -33,7 +33,7 @@ export default function GroupChat() {
    const [userNames, setUserNames] = useState<Record<string, string>>({})
 
    const { writeContract } = useWriteContract()
-   const client = useClient()
+   const publicClient = usePublicClient()
 
    const { data: allUsers } = useReadContract({
      address: CONTRACT_ADDRESSES.registry,
@@ -55,8 +55,8 @@ export default function GroupChat() {
     }, [groupMessages])
 
    useEffect(() => {
-     if (allUsers && allUsers.length > 0 && client) {
-       Promise.all(allUsers.map(address => client.readContract({
+     if (allUsers && allUsers.length > 0 && publicClient) {
+       Promise.all(allUsers.map(address => publicClient.readContract({
          address: CONTRACT_ADDRESSES.registry,
          abi: registryAbi,
          functionName: 'getUserDetails',
@@ -71,7 +71,7 @@ export default function GroupChat() {
          console.error('Error fetching user details:', error)
        })
      }
-   }, [allUsers, client])
+   }, [allUsers, publicClient])
 
    useWatchContractEvent({
      address: CONTRACT_ADDRESSES.chat,
